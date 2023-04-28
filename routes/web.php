@@ -1,5 +1,9 @@
 <?php
 
+use App\Mail\Invitation;
+use App\Models\Invites;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +20,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('register', function () {
+    $user = User::query()->create([
+        'name' => request()->name,
+        'email' => request()->email,
+        'password' => bcrypt(request()->password)
+    ]);
+
+    return $user;
+})->name('register');
+
+Route::post('invite', function(){
+    Mail::to(request()->email)->send(new Invitation());
+    Invites::create(['email' => request()->email]);
+});
+
+
